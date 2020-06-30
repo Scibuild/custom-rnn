@@ -1,0 +1,107 @@
+use ndarray::Array1;
+use ndarray::Array;
+use rand::Rng;
+
+type WeightV = Array1<f64>;
+type Weights = Vec<Array1<f64>>;
+type Activations = Array1<f64>;
+type Bias = Array1<f64>;
+type Neuron = (Weights, Bias);
+type Layer = Vec<Neuron>;
+type Layers = Vec<Layer>;
+
+pub mod util {
+    use super::Activations;
+
+    pub fn sigmoid(z: f64) -> f64 {
+        1.0/(1.0+(std::f64::consts::E.powf(-z)))
+    }
+
+    pub fn cost(output: &Activations, desired: &Activations) -> f64 {
+        output.iter().zip(desired.iter()).fold(0f64, |sum, (&o, &d)| sum + (d-o).powf(2.0))
+    }
+}
+
+#[derive(Debug)]
+pub struct Network {
+    neurons: Layers,    // Layer number, neuron number, (wheights, biases)
+    num_layers: usize,              // Number of Layers
+    layer_sizes: Vec<usize>,        // A vector of sizes of all the arrays
+    weights: Vec<Weights>,
+}
+
+impl Network {
+    pub fn random_network(layers: Vec<usize>) -> Network {
+        Network{
+            neurons: random_neurons(&layers),
+            num_layers: layers.len(),
+            layer_sizes: layers,
+        }
+    }
+
+    pub fn run_network(&self, input: Activations) -> Activations {
+        // self.neurons.iter().fold(input, |acc, x| calculate_layer(x, acc))
+        // does the same thing but nicer to read
+        let mut activations = input;
+        for layer in &self.neurons {
+            activations = calculate_layer(&layer, activations);
+        }
+        activations
+    }
+
+    pub fn back_propogate(&mut self, input: Activations, target: &Activations, eta: f64) {
+        
+        
+
+
+    }
+}
+
+fn delta_function(target: &Array1<f64>, layer: &Array1<f64>) -> Array1<f64> {
+    -(target - layer) * layer*(Array::ones(layer.len())-layer)
+}
+
+fn random_neurons(layer_spec: &Vec<usize>) -> Layers {
+    use rand::distributions::StandardNormal;
+    let mut rng = rand::thread_rng();
+
+    // turns out functional != easy to read
+    // (1..layers.len())   //ignore first layer, for input nodes
+    // .map(|l| {          // go through each layer and populate it with a vector of node weights
+    //     (0..layers[l]).map(|_| {    // for each node, generate an Array1 with the length of the previous set of neurons (the weights)
+    //         (Array1::from_iter(      //converts to array1
+    //             (0..layers[l-1]).map(|_| rng.gen()) // some random numbers in array
+    //         ),
+    //         rng.gen()       //random bias
+    //         )
+    //     }).collect()
+    // }).collect();
+
+    let mut layers = Vec::with_capacity(layer_spec.len()-1); // first number is number of inputs
+    for layer_number in 1..layer_spec.len() {
+        let layer_size = layer_spec[layer_number];
+        let num_weights = layer_spec[layer_number -1];
+        let mut layer = Vec::with_capacity(layer_size);
+        for _ in 0..layer_size {
+            let weights: Weights = rng.sample_iter(&StandardNormal).take(num_weights).collect();
+            let bias: 
+        }
+
+        layers.push(layer);
+        
+    }
+
+    layers
+
+}
+
+
+
+fn calculate_layer(neurons: &Vec<(Array1<f64>,f64)>, input_layer: Array1<f64>) -> Array1<f64> {
+    Array1::from_iter(
+        neurons.iter().map(|(weight, bias)| {
+            util::sigmoid(weight.dot(&input_layer) + bias)
+        })
+    )
+}
+
