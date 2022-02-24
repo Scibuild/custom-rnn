@@ -65,10 +65,10 @@ pub mod util {
         v.mapv(sigmoid)
     }
 
-    pub fn cost(output: &ActivationVector, desired: &ActivationVector) -> f64 {
-        // output.iter().zip(desired.iter()).fold(0f64, |sum, (&o, &d)| sum + (d-o).powf(2.0))
-        (desired - output).mapv(|f| f.powi(2)).sum()
-    }
+    // pub fn cost(output: &ActivationVector, desired: &ActivationVector) -> f64 {
+    //     // output.iter().zip(desired.iter()).fold(0f64, |sum, (&o, &d)| sum + (d-o).powf(2.0))
+    //     (desired - output).mapv(|f| f.powi(2)).sum()
+    // }
 
     // C = cost function
     // a = output vector
